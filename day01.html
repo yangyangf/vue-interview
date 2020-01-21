@@ -1,0 +1,30 @@
+question:v-for和v-if哪个优先级更高？如果两个同时出现应该怎样优化得到更好的性能？
+官方不推荐在同一元素上同时使用v-for和v-if!
+因为当二者作用于同一元素上时v-for的优先级会高于v-if，这会导致在只需要渲染特定条件下的数据时，每次都会在重渲染的时候去遍历整个数据列表，效率低下。
+解决办法：通过计算属性computed的方式，将想要渲染的特定数据过滤到新数据当中，再循环新数据就好。
+例如：
+<ul>
+  <li
+    v-for="user in users"
+    v-if="user.isActive"
+    :key="user.id"
+  >
+    {{ user.name }}
+  </li>
+</ul>
+可以改写成：
+<ul>
+  <li
+    v-for="user in activeUsers"
+    :key="user.id"
+  >
+    {{ user.name }}
+  </li>
+</ul>
+computed: {
+  activeUsers: function () {
+    return this.users.filter(function (user) {
+      return user.isActive
+    })
+  }
+}
